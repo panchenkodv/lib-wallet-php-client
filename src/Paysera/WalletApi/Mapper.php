@@ -2438,7 +2438,7 @@ class Paysera_WalletApi_Mapper
         return $walletPermissions;
     }
 
-    public function encodeClientWalletPermissions(Paysera_WalletApi_Entity_ClientWalletPermissions $walletPermissions): array
+    public function encodeClientWalletPermissions(Paysera_WalletApi_Entity_ClientWalletPermissions $walletPermissions)
     {
         if (!$walletPermissions->getWalletId()) {
             throw new Paysera_WalletApi_Exception_LogicException('Wallet ID must be provided');

@@ -38,7 +38,7 @@ class Paysera_WalletApi_Entity_ClientWalletPermissions
      * @param int $walletId
      * @return Paysera_WalletApi_Entity_ClientWalletPermissions
      */
-    public function setWalletId(int $walletId)
+    public function setWalletId($walletId)
     {
         $this->walletId = $walletId;
 
@@ -48,7 +48,7 @@ class Paysera_WalletApi_Entity_ClientWalletPermissions
     /**
      * @return int
      */
-    public function getWalletId(): int
+    public function getWalletId()
     {
         return $this->walletId;
     }
@@ -57,7 +57,7 @@ class Paysera_WalletApi_Entity_ClientWalletPermissions
      * @param string $accountNumber
      * @return Paysera_WalletApi_Entity_ClientWalletPermissions
      */
-    public function setAccountNumber(string $accountNumber)
+    public function setAccountNumber($accountNumber)
     {
         $this->accountNumber = $accountNumber;
 
