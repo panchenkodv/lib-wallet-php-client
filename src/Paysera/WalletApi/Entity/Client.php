@@ -55,6 +55,11 @@ class Paysera_WalletApi_Entity_Client
      */
     protected $credentials;
 
+    /**
+     * @var Paysera_WalletApi_Entity_ClientWalletPermissions[]
+     */
+    protected $walletsPermissions = array();
+
     public function __construct()
     {
         $this->permissions = new Paysera_WalletApi_Entity_ClientPermissions();
@@ -262,6 +267,25 @@ class Paysera_WalletApi_Entity_Client
     public function setServiceAgreementId($serviceAgreementId)
     {
         $this->serviceAgreementId = $serviceAgreementId;
+
+        return $this;
+    }
+
+    /**
+     * @return Paysera_WalletApi_Entity_ClientWalletPermissions[]
+     */
+    public function getWalletsPermissions()
+    {
+        return $this->walletsPermissions;
+    }
+
+    /**
+     * @param Paysera_WalletApi_Entity_ClientWalletPermissions[] $walletsPermissions
+     * @return $this
+     */
+    public function setWalletsPermissions($walletsPermissions)
+    {
+        $this->walletsPermissions = $walletsPermissions;
 
         return $this;
     }

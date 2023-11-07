@@ -1017,4 +1017,13 @@ class Paysera_WalletApi_Client_WalletClient extends Paysera_WalletApi_Client_Bas
 
         return $this->mapper->decodeClient($responseData);
     }
+
+    /**
+     * @param $clientId
+     * @return mixed|null
+     */
+    public function getWalletsPermissions($clientId)
+    {
+        return $this->get(sprintf('client/%s/wallets-permissions', $clientId));
+    }
 }
