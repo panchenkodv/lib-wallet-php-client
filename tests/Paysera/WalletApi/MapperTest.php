@@ -4,13 +4,14 @@ namespace Paysera\WalletApi;
 
 use DateTime;
 use Exception;
-use Paysera_WalletApi_Entity_ClientWalletPermissions;
+use Paysera_WalletApi_Entity_ClientPermissionsToWallet;
 use Paysera_WalletApi_Entity_Location_SearchFilter;
 use Paysera_WalletApi_Entity_Transaction;
 use Paysera_WalletApi_Entity_User_Identity;
 use Paysera_WalletApi_Exception_LogicException;
 use Paysera_WalletApi_Mapper;
 use Paysera_WalletApi_Mapper_IdentityMapper;
+use Paysera_WalletApi_OAuth_Consumer;
 
 class MapperTest extends \PHPUnit_Framework_TestCase
 {
@@ -130,39 +131,38 @@ class MapperTest extends \PHPUnit_Framework_TestCase
      * @param $input
      * @param $expected
      * @return void
-     * @dataProvider decodeClientWalletPermissionsDataProvider
+     * @dataProvider decodeClientPermissionsToWalletDataProvider
      */
-    public function testDecodeClientWalletPermissions($input, $expected)
+    public function testDecodeClientPermissionsToWallet($input, $expected)
     {
-        self::assertEquals($expected, $this->mapper->decodeClientWalletPermissions($input));
+        self::assertEquals($expected, $this->mapper->decodeClientPermissionsToWallet($input));
     }
 
     /**
      * @param $input
      * @param $expected
      * @return void
-     * @dataProvider encodeClientWalletPermissionsDataProvider
+     * @dataProvider encodeClientPermissionsToWalletDataProvider
      * @throws Paysera_WalletApi_Exception_LogicException
      */
-    public function testEncodeClientWalletPermissions($input, $expected)
+    public function testEncodeClientPermissionsToWallet($input, $expected)
     {
         if ($expected instanceof Exception) {
             self::setExpectedException(get_class($expected), $expected->getMessage());
         }
-        self::assertEquals($expected, $this->mapper->encodeClientWalletPermissions($input));
+        self::assertEquals($expected, $this->mapper->encodeClientPermissionsToWallet($input));
     }
 
-    public function decodeClientWalletPermissionsDataProvider()
+    public function decodeClientPermissionsToWalletDataProvider()
     {
         return [
             'case_1_empty_scopes' => [
                 'input' => [
                     'id' => 1,
                     'account' => 'EVP1',
-                    'balance' => false,
-                    'statements' => false,
+                    'scopes' => [],
                 ],
-                'expected' => Paysera_WalletApi_Entity_ClientWalletPermissions::create()
+                'expected' => Paysera_WalletApi_Entity_ClientPermissionsToWallet::create()
                     ->setWalletId(1)
                     ->setAccountNumber('EVP1')
                     ->setScopes([]),
@@ -171,100 +171,104 @@ class MapperTest extends \PHPUnit_Framework_TestCase
                 'input' => [
                     'id' => 1,
                     'account' => 'EVP1',
-                    'balance' => true,
-                    'statements' => false,
+                    'scopes' => [
+                        'balance'
+                    ],
                 ],
-                'expected' => Paysera_WalletApi_Entity_ClientWalletPermissions::create()
+                'expected' => Paysera_WalletApi_Entity_ClientPermissionsToWallet::create()
                     ->setWalletId(1)
                     ->setAccountNumber('EVP1')
-                    ->setScopes([Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_BALANCE]),
+                    ->setScopes([Paysera_WalletApi_OAuth_Consumer::SCOPE_BALANCE]),
             ],
             'case_3_statements_only' => [
                 'input' => [
                     'id' => 1,
                     'account' => 'EVP1',
-                    'balance' => false,
-                    'statements' => true,
+                    'scopes' => [
+                        'statements'
+                    ],
                 ],
-                'expected' => Paysera_WalletApi_Entity_ClientWalletPermissions::create()
+                'expected' => Paysera_WalletApi_Entity_ClientPermissionsToWallet::create()
                     ->setWalletId(1)
                     ->setAccountNumber('EVP1')
-                    ->setScopes([Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_STATEMENTS]),
+                    ->setScopes([Paysera_WalletApi_OAuth_Consumer::SCOPE_STATEMENTS]),
             ],
             'case_4_balance_and_statements' => [
                 'input' => [
                     'id' => 1,
                     'account' => 'EVP1',
-                    'balance' => true,
-                    'statements' => true,
+                    'scopes' => [
+                        'balance',
+                        'statements',
+                    ],
                 ],
-                'expected' => Paysera_WalletApi_Entity_ClientWalletPermissions::create()
+                'expected' => Paysera_WalletApi_Entity_ClientPermissionsToWallet::create()
                     ->setWalletId(1)
                     ->setAccountNumber('EVP1')
                     ->setScopes([
-                        Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_BALANCE,
-                        Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_STATEMENTS,
+                        Paysera_WalletApi_OAuth_Consumer::SCOPE_BALANCE,
+                        Paysera_WalletApi_OAuth_Consumer::SCOPE_STATEMENTS,
                     ]),
             ],
         ];
     }
 
-    public function encodeClientWalletPermissionsDataProvider()
+    public function encodeClientPermissionsToWalletDataProvider()
     {
         return [
             'case_1_exception' => [
-                'input' => Paysera_WalletApi_Entity_ClientWalletPermissions::create()
+                'input' => Paysera_WalletApi_Entity_ClientPermissionsToWallet::create()
                     ->setAccountNumber('EVP1')
                     ->setScopes([]),
                 'expected' => new Paysera_WalletApi_Exception_LogicException('Wallet ID must be provided'),
             ],
             'case_2_empty_scopes' => [
-                'input' => Paysera_WalletApi_Entity_ClientWalletPermissions::create()
+                'input' => Paysera_WalletApi_Entity_ClientPermissionsToWallet::create()
                     ->setWalletId(1)
                     ->setAccountNumber('EVP1')
                     ->setScopes([]),
                 'expected' => [
-                    'wallet' => 1,
-                    'account_number' => 'EVP1',
+                    'id' => 1,
+                    'account' => 'EVP1',
                     'scopes' => [],
                 ],
             ],
             'case_3_balance_only' => [
-                'input' => Paysera_WalletApi_Entity_ClientWalletPermissions::create()
+                'input' => Paysera_WalletApi_Entity_ClientPermissionsToWallet::create()
                     ->setWalletId(1)
                     ->setAccountNumber('EVP1')
-                    ->setScopes([Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_BALANCE]),
+                    ->setScopes([Paysera_WalletApi_OAuth_Consumer::SCOPE_BALANCE]),
                 'expected' => [
-                    'wallet' => 1,
-                    'account_number' => 'EVP1',
-                    'scopes' => [Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_BALANCE],
+                    'id' => 1,
+                    'account' => 'EVP1',
+                    'scopes' => [Paysera_WalletApi_OAuth_Consumer::SCOPE_BALANCE],
                 ],
             ],
             'case_4_statements_only' => [
-                'input' => Paysera_WalletApi_Entity_ClientWalletPermissions::create()
+                'input' => Paysera_WalletApi_Entity_ClientPermissionsToWallet::create()
                     ->setWalletId(1)
                     ->setAccountNumber('EVP1')
-                    ->setScopes([Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_STATEMENTS]),
+                    ->setScopes([Paysera_WalletApi_OAuth_Consumer::SCOPE_STATEMENTS]),
                 'expected' => [
-                    'wallet' => 1,
-                    'account_number' => 'EVP1',
-                    'scopes' => [Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_STATEMENTS],
+                    'id' => 1,
+                    'account' => 'EVP1',
+                    'scopes' => [Paysera_WalletApi_OAuth_Consumer::SCOPE_STATEMENTS],
                 ],
             ],
             'case_5_balance_and_statements' => [
-                'input' => Paysera_WalletApi_Entity_ClientWalletPermissions::create()
+                'input' => Paysera_WalletApi_Entity_ClientPermissionsToWallet::create()
                     ->setWalletId(1)
                     ->setAccountNumber('EVP1')
                     ->setScopes([
-                        Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_BALANCE,
-                        Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_STATEMENTS,
+                        Paysera_WalletApi_OAuth_Consumer::SCOPE_BALANCE,
+                        Paysera_WalletApi_OAuth_Consumer::SCOPE_STATEMENTS,
                     ]),
                 'expected' => [
-                    'wallet' => 1,
-                    'account_number' => 'EVP1',
+                    'id' => 1,
+                    'account' => 'EVP1',
                     'scopes' => [
-                        Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_BALANCE,
-                        Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_STATEMENTS,
+                        Paysera_WalletApi_OAuth_Consumer::SCOPE_BALANCE,
+                        Paysera_WalletApi_OAuth_Consumer::SCOPE_STATEMENTS,
                     ],
                 ],
             ],

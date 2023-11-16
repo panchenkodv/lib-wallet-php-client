@@ -2036,12 +2036,10 @@ class Paysera_WalletApi_Mapper
         }
         $client->setHosts($hosts);
 
-        if (!empty($data['wallets_permissions'])) {
-            $walletsPermissions = [];
-            foreach ($data['wallets_permissions'] as $walletPermission) {
-                $walletsPermissions[] = $this->decodeClientWalletPermissions($walletPermission);
+        if (!empty($data['permissions_to_wallets'])) {
+            foreach ($data['permissions_to_wallets'] as $walletPermission) {
+                $client->addPermissionsToWallets($this->decodeClientPermissionsToWallet($walletPermission));
             }
-            $client->setWalletsPermissions($walletsPermissions);
         }
 
         if (!empty($data['credentials'])) {
@@ -2079,10 +2077,10 @@ class Paysera_WalletApi_Mapper
 
         }
 
-        if (count($client->getWalletsPermissions()) > 0) {
-            $result['wallets_permissions'] = array();
-            foreach ($client->getWalletsPermissions() as $walletPermissions) {
-                $result['wallets_permissions'][] = $this->encodeClientWalletPermissions($walletPermissions);
+        if (count($client->getPermissionsToWallets()) > 0) {
+            $result['permissions_to_wallets'] = [];
+            foreach ($client->getPermissionsToWallets() as $permissionsToWallet) {
+                $result['permissions_to_wallets'][] = $this->encodeClientPermissionsToWallet($permissionsToWallet);
             }
         }
 
@@ -2405,48 +2403,50 @@ class Paysera_WalletApi_Mapper
     }
 
     /**
+     * @param array $data
+     * @return Paysera_WalletApi_Entity_ClientPermissionsToWallet[]
+     */
+    public function decodeClientPermissionsToWallets(array $data)
+    {
+        $result = [];
+
+        foreach ($data as $clientPermissionsToWallet) {
+            $result[] = $this->decodeClientPermissionsToWallet($clientPermissionsToWallet);
+        }
+
+        return $result;
+    }
+
+    /**
      * Decodes client wallet permissions
      *
      * @param array $data
      *
-     * @return Paysera_WalletApi_Entity_ClientWalletPermissions
+     * @return Paysera_WalletApi_Entity_ClientPermissionsToWallet
      */
-    public function decodeClientWalletPermissions(array $data)
+    public function decodeClientPermissionsToWallet(array $data)
     {
-        $scopes = [];
-
-        $walletPermissions = Paysera_WalletApi_Entity_ClientWalletPermissions::create()
+        return Paysera_WalletApi_Entity_ClientPermissionsToWallet::create()
             ->setWalletId($data['id'])
             ->setAccountNumber($data['account'])
+            ->setScopes($data['scopes'])
         ;
-
-        foreach ($data as $key => $value) {
-            switch ($key) {
-                case Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_BALANCE:
-                case Paysera_WalletApi_Entity_ClientWalletPermissions::SCOPE_STATEMENTS:
-                    if ($value) {
-                        $scopes[] = $key;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        $walletPermissions->setScopes($scopes);
-
-        return $walletPermissions;
     }
 
-    public function encodeClientWalletPermissions(Paysera_WalletApi_Entity_ClientWalletPermissions $walletPermissions)
+    /**
+     * @param Paysera_WalletApi_Entity_ClientPermissionsToWallet $walletPermissions
+     * @return array
+     * @throws Paysera_WalletApi_Exception_LogicException
+     */
+    public function encodeClientPermissionsToWallet(Paysera_WalletApi_Entity_ClientPermissionsToWallet $walletPermissions)
     {
-        if (!$walletPermissions->getWalletId()) {
+        if ($walletPermissions->getWalletId() === null) {
             throw new Paysera_WalletApi_Exception_LogicException('Wallet ID must be provided');
         }
 
         return [
-            'wallet' => $walletPermissions->getWalletId(),
-            'account_number' => $walletPermissions->getAccountNumber(),
+            'id' => $walletPermissions->getWalletId(),
+            'account' => $walletPermissions->getAccountNumber(),
             'scopes' => $walletPermissions->getScopes(),
         ];
     }

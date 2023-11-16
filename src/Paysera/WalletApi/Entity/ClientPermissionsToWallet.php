@@ -1,16 +1,10 @@
 <?php
 
 /**
- * Paysera_WalletApi_Entity_ClientWalletPermissions
+ * Paysera_WalletApi_Entity_ClientPermissionsToWallet
  */
-class Paysera_WalletApi_Entity_ClientWalletPermissions
+class Paysera_WalletApi_Entity_ClientPermissionsToWallet
 {
-    /**
-     * Scopes
-     */
-    const SCOPE_BALANCE = 'balance';
-    const SCOPE_STATEMENTS = 'statements';
-
     /**
      * @var int
      */
@@ -24,10 +18,10 @@ class Paysera_WalletApi_Entity_ClientWalletPermissions
     /**
      * @var array
      */
-    protected $scopes = array();
+    protected $scopes = [];
 
     /**
-     * @return Paysera_WalletApi_Entity_ClientWalletPermissions
+     * @return self
      */
     public static function create()
     {
@@ -36,7 +30,7 @@ class Paysera_WalletApi_Entity_ClientWalletPermissions
 
     /**
      * @param int $walletId
-     * @return Paysera_WalletApi_Entity_ClientWalletPermissions
+     * @return self
      */
     public function setWalletId($walletId)
     {
@@ -55,7 +49,7 @@ class Paysera_WalletApi_Entity_ClientWalletPermissions
 
     /**
      * @param string $accountNumber
-     * @return Paysera_WalletApi_Entity_ClientWalletPermissions
+     * @return self
      */
     public function setAccountNumber($accountNumber)
     {
@@ -77,7 +71,7 @@ class Paysera_WalletApi_Entity_ClientWalletPermissions
      *
      * @param array $scopes
      *
-     * @return Paysera_WalletApi_Entity_ClientWalletPermissions
+     * @return self
      */
     public function setScopes($scopes)
     {
@@ -101,7 +95,7 @@ class Paysera_WalletApi_Entity_ClientWalletPermissions
      */
     public function isBalanceGranted()
     {
-        return $this->isGranted(self::SCOPE_BALANCE);
+        return $this->isGranted(Paysera_WalletApi_OAuth_Consumer::SCOPE_BALANCE);
     }
 
     /**
@@ -109,39 +103,39 @@ class Paysera_WalletApi_Entity_ClientWalletPermissions
      */
     public function isStatementsGranted()
     {
-        return $this->isGranted(self::SCOPE_STATEMENTS);
+        return $this->isGranted(Paysera_WalletApi_OAuth_Consumer::SCOPE_STATEMENTS);
     }
 
     /**
-     * @return Paysera_WalletApi_Entity_ClientWalletPermissions
+     * @return self
      */
     public function grantBalance()
     {
-        return $this->grant(self::SCOPE_BALANCE);
+        return $this->grant(Paysera_WalletApi_OAuth_Consumer::SCOPE_BALANCE);
     }
 
     /**
-     * @return Paysera_WalletApi_Entity_ClientWalletPermissions
+     * @return self
      */
     public function grantStatements()
     {
-        return $this->grant(self::SCOPE_STATEMENTS);
+        return $this->grant(Paysera_WalletApi_OAuth_Consumer::SCOPE_STATEMENTS);
     }
 
     /**
-     * @return Paysera_WalletApi_Entity_ClientWalletPermissions
+     * @return self
      */
     public function revokeBalance()
     {
-        return $this->revoke(self::SCOPE_BALANCE);
+        return $this->revoke(Paysera_WalletApi_OAuth_Consumer::SCOPE_BALANCE);
     }
 
     /**
-     * @return Paysera_WalletApi_Entity_ClientWalletPermissions
+     * @return self
      */
     public function revokeStatements()
     {
-        return $this->revoke(self::SCOPE_STATEMENTS);
+        return $this->revoke(Paysera_WalletApi_OAuth_Consumer::SCOPE_STATEMENTS);
     }
 
     /**
@@ -161,7 +155,7 @@ class Paysera_WalletApi_Entity_ClientWalletPermissions
      *
      * @param string $scope
      *
-     * @return Paysera_WalletApi_Entity_ClientWalletPermissions
+     * @return self
      */
     protected function revoke($scope)
     {
@@ -179,7 +173,7 @@ class Paysera_WalletApi_Entity_ClientWalletPermissions
      *
      * @param string $scope
      *
-     * @return Paysera_WalletApi_Entity_ClientWalletPermissions
+     * @return self
      */
     protected function grant($scope)
     {

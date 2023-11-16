@@ -56,9 +56,9 @@ class Paysera_WalletApi_Entity_Client
     protected $credentials;
 
     /**
-     * @var Paysera_WalletApi_Entity_ClientWalletPermissions[]
+     * @var Paysera_WalletApi_Entity_ClientPermissionsToWallet[]
      */
-    protected $walletsPermissions = array();
+    protected $permissionsToWallets = [];
 
     public function __construct()
     {
@@ -272,20 +272,31 @@ class Paysera_WalletApi_Entity_Client
     }
 
     /**
-     * @return Paysera_WalletApi_Entity_ClientWalletPermissions[]
+     * @return Paysera_WalletApi_Entity_ClientPermissionsToWallet[]
      */
-    public function getWalletsPermissions()
+    public function getPermissionsToWallets()
     {
-        return $this->walletsPermissions;
+        return $this->permissionsToWallets;
     }
 
     /**
-     * @param Paysera_WalletApi_Entity_ClientWalletPermissions[] $walletsPermissions
-     * @return $this
+     * @param Paysera_WalletApi_Entity_ClientPermissionsToWallet[] $permissionsToWallets
+     * @return self
      */
-    public function setWalletsPermissions($walletsPermissions)
+    public function setPermissionsToWallets($permissionsToWallets)
     {
-        $this->walletsPermissions = $walletsPermissions;
+        $this->permissionsToWallets = $permissionsToWallets;
+
+        return $this;
+    }
+
+    /**
+     * @param Paysera_WalletApi_Entity_ClientPermissionsToWallet $permissionsToWallets
+     * @return self
+     */
+    public function addPermissionsToWallets(Paysera_WalletApi_Entity_ClientPermissionsToWallet $permissionsToWallets)
+    {
+        $this->permissionsToWallets[] = $permissionsToWallets;
 
         return $this;
     }
